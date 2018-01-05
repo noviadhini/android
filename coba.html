@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Visit Malang</title>
+
+	<script src="https://www.gstatic.com/firebasejs/4.8.1/firebase.js"></script>
+		<script>
+		  // Initialize Firebase
+		  var config = {
+		    apiKey: "AIzaSyBkOi6cBdd7hCSnXuIVrr5E5Zjbs6-FiEU",
+		    authDomain: "visitmalang2.firebaseapp.com",
+		    databaseURL: "https://visitmalang2.firebaseio.com",
+		    projectId: "visitmalang2",
+		    storageBucket: "visitmalang2.appspot.com",
+		    messagingSenderId: "655451263114"
+		  };
+		  firebase.initializeApp(config);
+</script>
+</head>
+<body>
+		<table>
+			
+			<tr>
+				<td>Nama</td>
+				<td><input type="text" name="user_name" id="user_name"></td>
+			</tr>
+			<tr>
+				<td>Alamat</td>
+				<td><input type="text" name="alamat" id="alamat"></td>
+			</tr>
+			<tr>
+				<td>Telp</td>
+				<td><input type="text" name="telp" id="telp"></td>
+			</tr>
+			<tr>
+				<td>Deskripsi</td>
+				<td><input type="text" name="deskripsi" id="deskripsi"></td>
+			</tr>
+			<tr>
+				<td>Gambar</td>
+				<td><input type="file" name="gambar" id="inpBilde"></td>
+			</tr>
+			<tr>
+				<td><input type="button" value="Save" onclick="save_user();"></td>
+			</tr>
+		</table>
+
+	<h1>Data Penginapan</h1>
+	<table id="tbl_list" border="1">
+		<tr>
+			
+				<!-- <td>ID</td> -->
+				<td>Nama</td>
+				<td>Alamat</td>
+				<td>Telp</td>
+				<td>Deskripsi</td>
+				<td>Gambar</td>
+				<td>Action</td>
+			
+		</tr>
+		
+	</table>
+
+	<script>
+		var tblUsers = document.getElementById('tbl_list');
+		var databaseRef = firebase.database().ref('Penginapan/');
+
+		var storage = firebase.storage();
+		rowIndex=1;
+		
+
+		databaseRef.once('value', function(snapshot)
+		{
+			snapshot.forEach(function(childSnapshot)
+			{
+				var childKey = childSnapshot.key;
+			var childData = childSnapshot.val();
+
+			var row = tblUsers.insertRow(rowIndex);
+
+			// var cellId = row.insertCell(0);
+			var cellName = row.insertCell(0);
+			var cellAlamat = row.insertCell(1);
+			var cellTelp = row.insertCell(2);
+			var cellDeskripsi = row.insertCell(3);
+
+			// cellId.appendChild(document.createTextNode(childKey)); ID
+			cellName.appendChild(document.createTextNode(childData.nama));
+			cellAlamat.appendChild(document.createTextNode(childData.alamat));
+			cellTelp.appendChild(document.createTextNode(childData.telp));
+			cellDeskripsi.appendChild(document.createTextNode(childData.deskripsi));
+
+			rowIndex = rowIndex + 1;
+		});
+		});
+		
+		
+		function save_user()
+		{
+			
+
+			var nama = document.getElementById('user_name').value;
+			var alamat = document.getElementById('alamat').value;
+			var telp = document.getElementById('telp').value;
+			var deskripsi = document.getElementById('deskripsi').value;
+
+			var uid = firebase.database().ref().child('Penginapan').push().key;
+
+
+			var data = {
+				id: uid,
+				nama: nama,
+				alamat: alamat,
+				telp: telp,
+				
+				deskripsi: deskripsi
+				
+
+			}
+			
+			var updates = {};
+			updates['/Penginapan/' +uid] = data;
+			firebase.database().ref().update(updates);
+			alert('sukses');
+			reload_page();
+
+		}
+		function update_user()
+		{
+			var data = {
+				id: uid,
+				nama: nama,
+				alamat: alamat,
+				telp: telp,
+				deskripsi: deskripsi,
+
+			}
+			var updates = {};
+			updates['/Penginapan/' +uid] = data;
+			firebase.database().ref().update(updates);
+			alert('sukses');
+			reload_page();
+		}
+		// function delete()
+		// {
+		// 	firebase.database().ref().child('/Penginapan/' +uid).remove();
+		// 	alert('sukses');
+		// 	reload_page();
+		// }
+		function reload_page()
+		 {
+			window.location.reload();
+		}
+
+	</script>
+
+</body>
+</html>
